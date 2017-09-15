@@ -33,7 +33,7 @@ def returnOpts(args) {
 }
 
 def downloadjar(args) {
-  def options = returnOpts(args)
+  new options = returnOpts(args)
 
   for (option in ['a', 'r', 'u', 'p']) {
     println "${option}: ${options[option]}"
