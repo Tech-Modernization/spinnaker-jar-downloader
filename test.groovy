@@ -68,5 +68,38 @@ def downloadJarFileFromWeb(CloudFoundryDeployDescription description) {
 
 }
 
-def description = new CloudFoundryDeployDescription ("http://nexus-2040588938.ca-central-1.elb.amazonaws.com/repository/hgallotest","spring-cloud-spinnaker-1.0.0.BUILD-SNAPSHOT.jar",null,null)
-downloadJarFileFromWeb(description)
+def returnOpts(args) {
+    def cli = new CliBuilder(usage: './downloadjar.groovy -[hraups]')
+    // Create the list of options.
+    cli.with {
+        h longOpt: 'help', 'Show usage information'
+        r longOpt: 'repository', required: true, args: 1, 'URL to JAR repository'
+        a longOpt: 'artifact', required: true, args: 1, 'Artifact name'
+        u longOpt: 'user', args: 1, 'Username for basic auth'
+        p longOpt: 'password', args: 1, 'Password for basic auth'
+    }
+
+    def opts = cli.parse(args)
+
+    // Show usage text when -h or --help option is used.
+    if (opts.h) {
+        cli.usage()
+        // Will output:
+        // usage: ./test.groovy -[hraups]
+        //  -r,--repository       URL to JAR repository
+        //  -a,--artifact         Artifact name
+        //  -h,--help             Show usage information
+        //  -u,--user             Username for basic auth
+        //  -p,--password         Password for basic auth
+        System.exit(0)
+    }
+    return opts
+}
+
+def doDownload(args) {
+    def options = returnOpts(args)
+    def description = new CloudFoundryDeployDescription (options."repository",options."artifact",options."user",options."password")
+    downloadJarFileFromWeb(description)
+}
+
+doDownload(args)
